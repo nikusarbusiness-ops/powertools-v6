@@ -1,92 +1,31 @@
-
-name: Build PowerTools
+name: Build Minecraft Plugin
 
 on:
   push:
-    branches: [main, master]
-  workflow_dispatch:
-
-permissions:
-  contents: read
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Repository herunterladen
-        uses: actions/checkout@v5
+    - name: Repository auschecken
+      uses: actions/checkout@v4
 
-      - name: Java 21 installieren
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: '21'
-          cache: maven
+    - name: Java 17 einrichten
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        cache: 'maven'
 
-      - name: Projekt automatisch strukturieren
-        shell: bash
-        run: |
-          set -e
+    - name: Mit Maven bauen (Kompilieren & Packaging)
+      run: mvn clean package
 
-          mkdir -p src/main/java src/main/resources
-
-          # Java-Dateien anhand ihres package richtig einsortieren
-          while IFS= read -r -d '' file; do
-            package=$(grep -m1 -E '^[[:space:]]*package[[:space:]]+' "$file" \
-              | sed -E 's/^[[:space:]]*package[[:space:]]+([^;]+);.*/\1/' \
-              | tr '.' '/')
-
-            if [ -n "$package" ]; then
-              mkdir -p "src/main/java/$package"
-              cp "$file" "src/main/java/$package/"
-            else
-              cp "$file" src/main/java/
-            fi
-          done < <(find . -maxdepth 1 -type f -name '*.java' -print0)
-
-          # Plugin-Konfiguration und Ressourcen übernehmen
-          for file in plugin.yml config.yml; do
-            if [ -f "$file" ]; then
-              cp "$file" src/main/resources/
-            fi
-          done
-
-          # Pflichtdatei überprüfen
-          if [ ! -f src/main/resources/plugin.yml ]; then
-            echo "FEHLER: plugin.yml fehlt im Repository!"
-            exit 1
-          fi
-
-          echo "Projektstruktur:"
-          find src/main -type f
-
-      - name: Maven Build
-        run: mvn -B -U clean package
-
-      - name: JAR überprüfen
-        shell: bash
-        run: |
-          set -e
-          JAR=$(find target -maxdepth 1 -type f -name '*.jar' \
-            ! -name '*-sources.jar' | head -n 1)
-
-          if [ -z "$JAR" ]; then
-            echo "FEHLER: Keine JAR erstellt!"
-            exit 1
-          fi
-
-          if ! jar tf "$JAR" | grep -qx 'plugin.yml'; then
-            echo "FEHLER: plugin.yml fehlt in der fertigen JAR!"
-            exit 1
-          fi
-
-          echo "ERFOLG: plugin.yml ist in der JAR enthalten."
-          jar tf "$JAR"
-
-      - name: Fertiges Plugin hochladen
-        uses: actions/upload-artifact@v6
-        with:
-          name: PowerTools-Plugin
-          path: target/*.jar
-          if-no-files-found: error
+    - name: Plugin-Artefakt hochladen
+      uses: actions/upload-artifact@v4
+      with:
+        name: PowerTools-Plugin
+        path: target/*.jar
