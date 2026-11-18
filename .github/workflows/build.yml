@@ -14,11 +14,11 @@ jobs:
     - name: Repository auschecken
       uses: actions/checkout@v4
 
-    - name: Java 17 einrichten
+    - name: Java 21 einrichten
       uses: actions/setup-java@v5
       with:
         distribution: 'temurin'
-        java-version: '17'
+        java-version: '21'
         cache: 'maven'
 
     - name: Ordnerstruktur für Maven automatisch erstellen
@@ -27,7 +27,7 @@ jobs:
         mkdir -p src/main/java/de/powersmp/powertools
         mkdir -p src/main/resources
 
-        # Verschiebe Java-Datei an den richtigen Ort (falls sie im Root liegt)
+        # Verschiebe Java-Datei an den richtigen Ort (falls im Root vorhanden)
         if [ -f "PowerTools.java" ]; then
           mv PowerTools.java src/main/java/de/powersmp/powertools/
         fi
