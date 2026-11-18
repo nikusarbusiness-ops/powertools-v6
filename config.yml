@@ -1,0 +1,22 @@
+# PowerTools 2.0.0
+# Alle PowerTools laufen nach 5 Tagen ab.
+
+lifetime-days: 5
+
+blitz-drill:
+  enabled: true
+  area: 3
+  silk-touch: true
+
+blitz-axe:
+  enabled: true
+  timber-enabled: true
+  max-extra-logs: 63
+
+blitz-shovel:
+  enabled: true
+  area: 3
+
+blitz-bucket:
+  enabled: true
+  capacity: 21
