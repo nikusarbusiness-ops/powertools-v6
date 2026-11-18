@@ -3,13 +3,14 @@ version: 2.0.0
 main: de.powersmp.powertools.PowerTools
 api-version: '1.21'
 author: PowerSMP
-description: Custom PowerSMP tools for Spigot 1.21.11
+
 commands:
   powertools:
-    description: Gives and manages PowerTools
-    usage: /powertools give <player> <drill|axe|shovel|bucket> [amount]
+    description: Give PowerTools
+    usage: /powertools give <player> <tool>
     aliases: [pt]
+
 permissions:
   powertools.admin:
-    description: Allows managing and giving PowerTools
+    description: Allows managing PowerTools
     default: op
